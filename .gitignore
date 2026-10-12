@@ -1,0 +1,15 @@
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# Generated XML documents (may contain customer data); examples live in Samples/
+XmlOrnekleri/
+
+# Local connection settings
+Data/connection-string.txt
