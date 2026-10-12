@@ -1,0 +1,412 @@
+<Window x:Class="EDonusumDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="E-Dönüşüm Demo" Height="820" Width="1240" MinHeight="720" MinWidth="1080"
+        Background="#F6F7F9" FontFamily="Segoe UI" FontSize="13">
+    <Window.Resources>
+        <SolidColorBrush x:Key="PanelBorder" Color="#D8DDE6"/>
+        <SolidColorBrush x:Key="PanelBackground" Color="#FFFFFF"/>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="0,4,12,10"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="BorderBrush" Value="#C8CED8"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="0,4,12,10"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="MinHeight" Value="30"/>
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="Margin" Value="0,4,12,10"/>
+            <Setter Property="MinHeight" Value="30"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="MinHeight" Value="34"/>
+            <Setter Property="Background" Value="#1D4ED8"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#1D4ED8"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="BorderBrush" Value="#D8DDE6"/>
+            <Setter Property="RowHeight" Value="32"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <Border DockPanel.Dock="Top" Background="#111827" Padding="20,14">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="E-Dönüşüm Demo" Foreground="White" FontSize="22" FontWeight="SemiBold"/>
+                    <TextBlock Text="Cari, stok, fatura, irsaliye ve UBL-TR XML üretimi" Foreground="#C7D2FE" Margin="0,2,0,0"/>
+                </StackPanel>
+                <TextBlock x:Name="StatusText" Grid.Column="1" Foreground="#D1D5DB" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <TabControl x:Name="MainTabs" Margin="16" Background="Transparent">
+            <TabItem Header="Cari Kartlar">
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="360"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Cari Listesi" FontSize="17" FontWeight="SemiBold"/>
+                            <DataGrid x:Name="CustomersGrid" SelectionChanged="CustomersGrid_SelectionChanged">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Unvan" Binding="{Binding Title}" Width="2*"/>
+                                    <DataGridTextColumn Header="Vergi No / TCKN" Binding="{Binding TaxNumber}" Width="120"/>
+                                    <DataGridTextColumn Header="Vergi Dairesi" Binding="{Binding TaxOffice}" Width="130"/>
+                                    <DataGridTextColumn Header="Telefon" Binding="{Binding Phone}" Width="145"/>
+                                    <DataGridCheckBoxColumn Header="E-Fatura" Binding="{Binding IsEInvoicePayer}" Width="90"/>
+                                    <DataGridTextColumn Header="E-posta" Binding="{Binding Email}" Width="170"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </Border>
+                    <Border Grid.Column="1" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14" Margin="12,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Cari Kayıt" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                            <TextBlock Text="Cari Unvan"/>
+                            <TextBox x:Name="CustomerTitleBox"/>
+                            <TextBlock Text="Vergi Dairesi"/>
+                            <TextBox x:Name="CustomerTaxOfficeBox"/>
+                            <TextBlock Text="Vergi No / TCKN"/>
+                            <TextBox x:Name="CustomerTaxNumberBox"/>
+                            <TextBlock Text="Adres"/>
+                            <TextBox x:Name="CustomerAddressBox" AcceptsReturn="True" Height="72" TextWrapping="Wrap"/>
+                            <TextBlock Text="Telefon"/>
+                            <TextBox x:Name="CustomerPhoneBox"/>
+                            <TextBlock Text="E-posta"/>
+                            <TextBox x:Name="CustomerEmailBox"/>
+                            <CheckBox x:Name="CustomerEInvoiceCheck" Content="E-Fatura mükellefi" Margin="0,2,0,14"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Yeni" Click="NewCustomer_Click" Background="#4B5563" BorderBrush="#4B5563"/>
+                                <Button Content="Kaydet" Click="SaveCustomer_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Stok / Malzeme">
+                <Grid Margin="0,12,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="360"/>
+                    </Grid.ColumnDefinitions>
+                    <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Top" Text="Stok Listesi" FontSize="17" FontWeight="SemiBold"/>
+                            <DataGrid x:Name="ProductsGrid" SelectionChanged="ProductsGrid_SelectionChanged">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Ürün Kodu" Binding="{Binding Code}" Width="120"/>
+                                    <DataGridTextColumn Header="Ürün Adı" Binding="{Binding Name}" Width="2*"/>
+                                    <DataGridTextColumn Header="Birim" Binding="{Binding Unit}" Width="90"/>
+                                    <DataGridTextColumn Header="KDV %" Binding="{Binding VatRate}" Width="90"/>
+                                    <DataGridTextColumn Header="Birim Fiyat" Binding="{Binding UnitPrice, StringFormat=N2}" Width="120"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </DockPanel>
+                    </Border>
+                    <Border Grid.Column="1" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14" Margin="12,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Stok Kayıt" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                            <TextBlock Text="Ürün Kodu"/>
+                            <TextBox x:Name="ProductCodeBox"/>
+                            <TextBlock Text="Ürün Adı"/>
+                            <TextBox x:Name="ProductNameBox"/>
+                            <TextBlock Text="Birim"/>
+                            <ComboBox x:Name="ProductUnitCombo" SelectedIndex="0">
+                                <ComboBoxItem Content="ADET"/>
+                                <ComboBoxItem Content="SAAT"/>
+                                <ComboBoxItem Content="GÜN"/>
+                                <ComboBoxItem Content="KG"/>
+                                <ComboBoxItem Content="LT"/>
+                                <ComboBoxItem Content="METRE"/>
+                                <ComboBoxItem Content="PAKET"/>
+                            </ComboBox>
+                            <TextBlock Text="KDV Oranı"/>
+                            <TextBox x:Name="ProductVatBox"/>
+                            <TextBlock Text="Birim Fiyat"/>
+                            <TextBox x:Name="ProductPriceBox"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                <Button Content="Yeni" Click="NewProduct_Click" Background="#4B5563" BorderBrush="#4B5563"/>
+                                <Button Content="Kaydet" Click="SaveProduct_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="InvoiceTabItem" Header="Fatura">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="170"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Fatura No"/>
+                                <TextBox x:Name="InvoiceNumberBox"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Fatura Tarihi"/>
+                                <DatePicker x:Name="InvoiceDatePicker"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Satıcı"/>
+                                <ComboBox x:Name="InvoiceSupplierCombo" DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
+                                <TextBlock Text="Alıcı"/>
+                                <ComboBox x:Name="InvoiceCustomerCombo" DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Belge Tipi"/>
+                                <ComboBox x:Name="InvoiceKindCombo">
+                                    <ComboBoxItem Content="E-Fatura" Tag="EInvoice"/>
+                                    <ComboBoxItem Content="E-Arşiv Fatura" Tag="EArchiveInvoice"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="5">
+                                <TextBlock Text="Açıklama"/>
+                                <TextBox x:Name="InvoiceDescriptionBox"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="360"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Fatura Kalemleri" FontSize="17" FontWeight="SemiBold"/>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,8,0,0">
+                                    <StackPanel Width="280">
+                                        <TextBlock Text="Ürün"/>
+                                        <ComboBox x:Name="InvoiceProductCombo" DisplayMemberPath="Name" SelectionChanged="InvoiceProductCombo_SelectionChanged"/>
+                                    </StackPanel>
+                                    <StackPanel Width="110">
+                                        <TextBlock Text="Miktar"/>
+                                        <TextBox x:Name="InvoiceQuantityBox"/>
+                                    </StackPanel>
+                                    <StackPanel Width="120">
+                                        <TextBlock Text="Birim Fiyat"/>
+                                        <TextBox x:Name="InvoiceUnitPriceBox"/>
+                                    </StackPanel>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="KDV"/>
+                                        <TextBox x:Name="InvoiceVatBox"/>
+                                    </StackPanel>
+                                    <Button Content="Kalem Ekle" Click="AddInvoiceLine_Click" VerticalAlignment="Bottom" Margin="0,0,8,10"/>
+                                    <Button Content="Seçileni Sil" Click="RemoveInvoiceLine_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#B91C1C" BorderBrush="#B91C1C"/>
+                                </StackPanel>
+                                <DataGrid x:Name="InvoiceLinesGrid">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Ürün" Binding="{Binding ProductName}" Width="2*"/>
+                                        <DataGridTextColumn Header="Miktar" Binding="{Binding Quantity}" Width="90"/>
+                                        <DataGridTextColumn Header="Birim" Binding="{Binding Unit}" Width="80"/>
+                                        <DataGridTextColumn Header="Birim Fiyat" Binding="{Binding UnitPrice, StringFormat=N2}" Width="110"/>
+                                        <DataGridTextColumn Header="KDV %" Binding="{Binding VatRate}" Width="80"/>
+                                        <DataGridTextColumn Header="Toplam" Binding="{Binding TotalAmount, StringFormat=N2}" Width="110"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14" Margin="12,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="Fatura Özeti" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                                <TextBlock x:Name="InvoiceSubtotalText" FontSize="16" Margin="0,4"/>
+                                <TextBlock x:Name="InvoiceVatTotalText" FontSize="16" Margin="0,4"/>
+                                <TextBlock x:Name="InvoiceGrandTotalText" FontSize="20" FontWeight="SemiBold" Margin="0,10,0,18"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Kaydet" Click="SaveInvoice_Click"/>
+                                </StackPanel>
+                                <TextBlock Text="XML Önizleme" FontWeight="SemiBold" Margin="0,18,0,4"/>
+                                <TextBox x:Name="InvoiceXmlPreviewBox" Height="360" AcceptsReturn="True" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem x:Name="WaybillTabItem" Header="İrsaliye">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="170"/>
+                                <ColumnDefinition Width="170"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="İrsaliye No"/>
+                                <TextBox x:Name="WaybillNumberBox"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Tarih"/>
+                                <DatePicker x:Name="WaybillDatePicker"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Sevk Tarihi"/>
+                                <DatePicker x:Name="ShipmentDatePicker"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="3">
+                                <TextBlock Text="Gönderen"/>
+                                <ComboBox x:Name="WaybillSenderCombo" DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Alıcı"/>
+                                <ComboBox x:Name="WaybillReceiverCombo" DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="5">
+                                <TextBlock Text="Taşıyıcı Bilgisi"/>
+                                <TextBox x:Name="CarrierInfoBox"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="360"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="İrsaliye Kalemleri" FontSize="17" FontWeight="SemiBold"/>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,8,0,0">
+                                    <StackPanel Width="300">
+                                        <TextBlock Text="Ürün"/>
+                                        <ComboBox x:Name="WaybillProductCombo" DisplayMemberPath="Name"/>
+                                    </StackPanel>
+                                    <StackPanel Width="120">
+                                        <TextBlock Text="Miktar"/>
+                                        <TextBox x:Name="WaybillQuantityBox"/>
+                                    </StackPanel>
+                                    <Button Content="Kalem Ekle" Click="AddWaybillLine_Click" VerticalAlignment="Bottom" Margin="0,0,8,10"/>
+                                    <Button Content="Seçileni Sil" Click="RemoveWaybillLine_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#B91C1C" BorderBrush="#B91C1C"/>
+                                </StackPanel>
+                                <DataGrid x:Name="WaybillLinesGrid">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Ürün" Binding="{Binding ProductName}" Width="2*"/>
+                                        <DataGridTextColumn Header="Miktar" Binding="{Binding Quantity}" Width="90"/>
+                                        <DataGridTextColumn Header="Birim" Binding="{Binding Unit}" Width="90"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14" Margin="12,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="İrsaliye İşlemleri" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Kaydet" Click="SaveWaybill_Click"/>
+                                </StackPanel>
+                                <TextBlock Text="XML Önizleme" FontWeight="SemiBold" Margin="0,18,0,4"/>
+                                <TextBox x:Name="WaybillXmlPreviewBox" Height="500" AcceptsReturn="True" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Belgeler">
+                <Grid Margin="0,12,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Width="180">
+                                <TextBlock Text="Başlangıç Tarihi"/>
+                                <DatePicker x:Name="FilterStartDatePicker"/>
+                            </StackPanel>
+                            <StackPanel Width="180">
+                                <TextBlock Text="Bitiş Tarihi"/>
+                                <DatePicker x:Name="FilterEndDatePicker"/>
+                            </StackPanel>
+                            <StackPanel Width="260">
+                                <TextBlock Text="Cari"/>
+                                <ComboBox x:Name="FilterCustomerCombo" DisplayMemberPath="Title"/>
+                            </StackPanel>
+                            <StackPanel Width="180">
+                                <TextBlock Text="Belge Tipi"/>
+                                <ComboBox x:Name="FilterKindCombo">
+                                    <ComboBoxItem Content="Tümü" Tag="All"/>
+                                    <ComboBoxItem Content="E-Fatura" Tag="EInvoice"/>
+                                    <ComboBoxItem Content="E-Arşiv Fatura" Tag="EArchiveInvoice"/>
+                                    <ComboBoxItem Content="E-İrsaliye" Tag="EWaybill"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <Button Content="Filtrele" Click="ApplyDocumentFilter_Click" VerticalAlignment="Bottom" Margin="0,0,8,10"/>
+                            <Button Content="Temizle" Click="ClearDocumentFilter_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#4B5563" BorderBrush="#4B5563"/>
+                            <Button Content="Belgeyi Aç" Click="OpenSelectedDocument_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#7C3AED" BorderBrush="#7C3AED"/>
+                            <Button Content="Sil" Click="DeleteSelectedDocument_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#B91C1C" BorderBrush="#B91C1C"/>
+                            <Button Content="XML Göster" Click="ShowSelectedDocumentXml_Click" VerticalAlignment="Bottom" Margin="0,0,8,10" Background="#047857" BorderBrush="#047857"/>
+                        </StackPanel>
+                    </Border>
+                    <Grid Grid.Row="1" Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="440"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Belge Listesi" FontSize="17" FontWeight="SemiBold"/>
+                                <DataGrid x:Name="DocumentsGrid">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="No" Binding="{Binding Number}" Width="135"/>
+                                        <DataGridTextColumn Header="Tarih" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="95"/>
+                                        <DataGridTextColumn Header="Cari" Binding="{Binding CustomerTitle}" Width="2*"/>
+                                        <DataGridTextColumn Header="Ürün" Binding="{Binding ProductType}" Width="160"/>
+                                        <DataGridTextColumn Header="Tutar" Binding="{Binding Amount, StringFormat=N2}" Width="95"/>
+                                        <DataGridTextColumn Header="Tip" Binding="{Binding KindName}" Width="115"/>
+                                        <DataGridTextColumn Header="XML" Binding="{Binding XmlStatus}" Width="55"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </DockPanel>
+                        </Border>
+                        <Border Grid.Column="1" Background="{StaticResource PanelBackground}" BorderBrush="{StaticResource PanelBorder}" BorderThickness="1" Padding="14" Margin="12,0,0,0">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Text="Seçili XML" FontSize="17" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <TextBox x:Name="DocumentXmlPreviewBox" AcceptsReturn="True" TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12"/>
+                            </DockPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>
